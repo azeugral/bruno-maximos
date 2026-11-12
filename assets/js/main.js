@@ -1,7 +1,6 @@
 (function () {
   var d = document, html = d.documentElement, hero = d.querySelector('.hero');
   var WA = '351962953437';
-  var ROT = [['Nº 1', 'Realismo B&G · 1.º lugar'], ['Nº 2', 'Poseidon · braço'], ['Nº 3', 'Lobo · ombro'], ['Nº 4', 'O tempo · antebraço']];
 
   /* ---------- medidas do hero ---------- */
   var grande = d.getElementById('grande'), palco = d.getElementById('palco');
@@ -13,58 +12,61 @@
     hero.style.setProperty('--ah', ah + 'px');
     grande.style.setProperty('--fs', '100px');
     var r = grande.scrollWidth / 100;
-    var alvo = vw < 640 ? vw - 2 * g : Math.min(vw - 2 * g - (vw > 1100 ? 260 : 0), ah * 1.9);
-    grande.style.setProperty('--fs', Math.max(40, alvo / r).toFixed(1) + 'px');
+    var alvo = vw < 640 ? vw - 2 * g : Math.min(vw - 2 * g - (vw > 1100 ? 260 : 0), ah * 1.15);
+    var fs = Math.max(40, alvo / r).toFixed(1) + 'px';
+    grande.style.setProperty('--fs', fs); hero.style.setProperty('--fs', fs);
   }
   ajustar();
   addEventListener('resize', ajustar);
   if (d.fonts && d.fonts.ready) d.fonts.ready.then(ajustar);
 
-  /* ---------- arte ---------- */
-  var cv = d.getElementById('arteCv'), vid = d.getElementById('arteVid'), fixa = d.getElementById('arteImg');
-  var peca = d.getElementById('peca'), atualP = 0;
-  function rotulo(i) {
-    if (i === atualP) return; atualP = i;
-    peca.style.opacity = 0;
-    setTimeout(function () { peca.children[0].textContent = ROT[i][0]; peca.children[1].textContent = ROT[i][1]; peca.style.opacity = 1; }, 380);
-  }
+  /* ---------- hero: do macro à peça inteira ----------
+     Cada peça abre num close extremo (o olho, a pele) e afasta até a obra inteira em ~1,3 s.
+     Só transform/opacity (GPU), sem vídeo nem WebGL: fluido também no celular. */
+  var PH = [
+    { n: 'premio', f: [.66, .36], z: 3.4, r: ['Nº 1', 'Realismo B&G · 1.º lugar'], s: '1.º lugar' },
+    { n: 'poseidon', f: [.40, .42], z: 3.0, r: ['Nº 2', 'Poseidon · antebraço'], s: 'Mitologia' },
+    { n: 'olho', f: [.45, .55], z: 3.8, r: ['Nº 3', 'O tempo · antebraço'], s: 'Olhar' },
+    { n: 'leopardo', f: [.40, .42], z: 3.2, r: ['Nº 4', 'Leopardo · costas inteiras'], s: 'Fechamento' }
+  ];
+  var CICLO = 4600, ZOOM = 1350, EASE = 'cubic-bezier(.2,.75,.1,1)';
+  var jan = d.getElementById('qJanela'), qz = d.getElementById('qZoom'), selo = d.getElementById('qSelo'), peca = d.getElementById('peca');
   var reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var qs = new URLSearchParams(location.search);
-
-  function shader() {
-    return HeroTinta.iniciar(cv, 'assets/hero/', { onPeca: function (i) { rotulo(i); } }).then(function (q) {
-      cv.hidden = false; vid.hidden = true; fixa.hidden = true;
-      var t0 = null, vis = true;
-      new IntersectionObserver(function (e) { vis = e[0].isIntersecting; }).observe(palco);
-      (function loop(ts) {
-        if (t0 === null) t0 = ts;
-        if (vis && !d.hidden) q((ts - t0) / 1000);
-        requestAnimationFrame(loop);
-      })(performance.now());
-    });
+  PH.forEach(function (p) { var im = new Image(); im.src = 'assets/img/h/' + p.n + '.webp'; p.im = im; });
+  function num(v) { return '×' + v.toFixed(1).replace('.', ','); }
+  function rotulo(p) {
+    peca.style.opacity = 0; selo.classList.remove('on');
+    setTimeout(function () { peca.children[0].textContent = p.r[0]; peca.children[1].textContent = p.r[1]; selo.textContent = p.s; peca.style.opacity = 1; selo.classList.add('on'); }, 260);
   }
-  function parado() { cv.hidden = true; vid.hidden = true; fixa.hidden = false; }
-
-  if (qs.has('render')) {
-    d.querySelector('.nome').hidden = true;
-    var w = +qs.get('w') || 1080;
-    HeroTinta.iniciar(cv, 'assets/hero/', { render: true, w: w, h: w }).then(function (q) { window.__q = q; window.__pronto = true; });
-  } else if (reduz) {
-    parado();
-  } else if (matchMedia('(pointer: coarse)').matches && VW() < 900) {
-    /* telemóvel: vídeo do mesmo shader; se o modo de poupança recusar o play, volta ao WebGL */
-    cv.hidden = true; vid.hidden = false;
-    vid.poster = 'assets/img/hero-poster.webp';
-    vid.src = 'assets/video/hero.mp4?v=4';
-    vid.addEventListener('timeupdate', function () { rotulo(Math.floor(vid.currentTime / HeroTinta.ciclo) % HeroTinta.n); });
-    var p = vid.play();
-    if (p && p.catch) p.catch(function () { shader().catch(parado); });
-  } else {
-    shader().catch(parado);
+  function abrirPeca(i, primeira) {
+    var p = PH[i], im = jan.querySelector('img:last-child');
+    if (!primeira) {
+      im = d.createElement('img'); im.src = p.im.src; im.alt = p.r[1] + ', tatuagem realista de Bruno Máximos';
+      jan.appendChild(im);
+      var velhas = [].slice.call(jan.querySelectorAll('img')).slice(0, -1);
+      setTimeout(function () { velhas.forEach(function (v) { v.remove(); }); }, 500);
+    }
+    im.style.transformOrigin = (p.f[0] * 100) + '% ' + (p.f[1] * 100) + '%';
+    im.animate([{ transform: 'scale(' + p.z + ')', opacity: 0 }, { opacity: 1, offset: .14 }, { transform: 'scale(1)', opacity: 1 }], { duration: ZOOM, easing: EASE, fill: 'both' });
+    im.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.035)' }], { duration: CICLO - ZOOM, delay: ZOOM, easing: 'linear', fill: 'forwards', composite: 'replace' });
+    var t0 = performance.now();
+    (function cont(t) {
+      var k = Math.min(1, (t - t0) / ZOOM), e = 1 - Math.pow(1 - k, 4);
+      qz.textContent = num(p.z + (1 - p.z) * e);
+      if (k < 1) requestAnimationFrame(cont);
+    })(t0);
+    rotulo(p);
+  }
+  if (reduz) { qz.textContent = num(1); selo.classList.add('on'); }
+  else {
+    var atual = 0, vis = true;
+    new IntersectionObserver(function (e) { vis = e[0].isIntersecting; }).observe(palco);
+    abrirPeca(0, true);
+    setInterval(function () { if (!vis || d.hidden) return; atual = (atual + 1) % PH.length; abrirPeca(atual); }, CICLO);
   }
 
   /* entrada */
-  d.querySelectorAll('.eti,.hero-base,.pre').forEach(function (el) { el.classList.add('ent'); });
+  d.querySelectorAll('.eti,.hero-base,.pre,.quadro').forEach(function (el) { el.classList.add('ent'); });
   requestAnimationFrame(function () { setTimeout(function () { hero.classList.add('pronto'); }, 30); });
 
   /* ---------- topo e gaveta ---------- */
@@ -81,31 +83,16 @@
   }, { rootMargin: '0px 0px -8% 0px' });
   function observar() { d.querySelectorAll('.rev:not(.vis),.item:not(.vis)').forEach(function (el, i) { el.style.transitionDelay = (i % 4) * 70 + 'ms'; io.observe(el); }); }
 
-  /* ---------- comparador pele × tinta ---------- */
-  var comp = d.getElementById('comp'), range = d.getElementById('cRange');
-  range.addEventListener('input', function () { comp.style.setProperty('--x', range.value + '%'); });
-  d.querySelectorAll('#cTabs button').forEach(function (b) {
-    b.addEventListener('click', function () {
-      d.querySelectorAll('#cTabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
-      var n = b.dataset.n;
-      d.getElementById('cFoto').src = 'assets/hero/' + n + '-foto.webp';
-      d.getElementById('cTinta').src = 'assets/hero/' + n + '.webp';
-      comp.animate && comp.animate([{ opacity: .4 }, { opacity: 1 }], { duration: 500, easing: 'cubic-bezier(.16,.84,.32,1)' });
-    });
-  });
-  /* convite: o corte desliza uma vez quando aparece */
-  new IntersectionObserver(function (e, o) {
-    if (!e[0].isIntersecting) return; o.disconnect();
-    var t0 = performance.now();
-    (function an(t) {
-      var k = Math.min(1, (t - t0) / 1800), v = 50 + Math.sin(k * Math.PI * 2) * 26 * (1 - k);
-      comp.style.setProperty('--x', v + '%'); range.value = v; if (k < 1) requestAnimationFrame(an);
-    })(t0);
-  }, { threshold: .6 }).observe(comp);
-
   /* ---------- portfólio ---------- */
   var grade = d.getElementById('grade'), mais = d.getElementById('mais'), filtro = 'todos';
   var passoN = matchMedia('(max-width:640px)').matches ? 8 : 12, limite = passoN;
+  /* contagem real em cada filtro e no destaque */
+  var nP = d.getElementById('nPecas'); if (nP) nP.textContent = PECAS.length;
+  d.querySelectorAll('.filtros button').forEach(function (b) {
+    var n = b.dataset.f === 'todos' ? PECAS.length : PECAS.filter(function (p) { return p.t === b.dataset.f; }).length;
+    var c = d.createElement('sup'); c.textContent = n; b.appendChild(c);
+  });
+  var TAG = { realismo: 'Realismo', trash: 'Trash Polka', curadas: 'Cicatrizada', coberturas: 'Cobertura' };
   PECAS.forEach(function (p, i) {
     var f = d.createElement('figure'); f.className = 'item'; f.tabIndex = 0; f.dataset.i = i;
     f.setAttribute('role', 'button'); f.setAttribute('aria-label', 'Ampliar: ' + p.l);

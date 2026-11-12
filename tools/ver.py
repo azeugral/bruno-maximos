@@ -10,11 +10,12 @@ os.makedirs(OUT, exist_ok=True)
 async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(args=['--use-gl=angle', '--enable-webgl', '--ignore-gpu-blocklist'])
+        prev = 0.3
         pg = await b.new_page(viewport={'width': 1440, 'height': 900})
-        await pg.goto(URL + '?render&w=800'); await pg.wait_for_function('window.__pronto')
-        for t in (0.3, 0.7, 1.1, 1.6, 2.2, 4.6):
-            await pg.evaluate(f'__q({t})')
-            await pg.locator('#arteCv').screenshot(path=f'{OUT}/hero-{t}.png')
+        await pg.goto(URL)
+        for t in (0.3, 0.7, 1.1, 1.6, 4.0):
+            await pg.wait_for_timeout(int(t*1000) - (0 if t == 0.3 else int(prev*1000))); prev = t
+            await pg.locator('#quadro').screenshot(path=f'{OUT}/hero-{t}.png')
         for w, h, nome in ((1440, 900, 'pc'), (1366, 768, 'note'), (1920, 1080, 'fhd'), (390, 844, 'cel'), (320, 640, 'cel320'), (844, 390, 'deitado'), (768, 1024, 'tablet')):
             ctx = await b.new_context(viewport={'width': w, 'height': h}, device_scale_factor=1, has_touch=w < 900, is_mobile=w < 600)
             q = await ctx.new_page(); await q.goto(URL); await q.wait_for_timeout(2500)

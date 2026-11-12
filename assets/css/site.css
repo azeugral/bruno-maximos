@@ -55,26 +55,29 @@ h1,h2,h3{margin:0;font-weight:400}
 
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:84px var(--g) 30px;overflow:hidden;
   background:var(--grao),radial-gradient(70% 60% at 50% 45%,#f3efe7 0%,var(--papel) 70%,#ddd6c8 100%)}
-.palco{position:relative;width:100%;display:flex;justify-content:center;align-items:center;height:var(--ah,70svh)}
-.nome{position:absolute;left:0;right:0;top:50%;transform:translateY(-58%);display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.palco{position:relative;width:100%;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;height:var(--ah,70svh)}
+.nome{position:relative;order:2;z-index:3;margin-top:calc(var(--fs,200px)*-.62);display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.nome .grande{text-shadow:0 2px 0 var(--papel),0 -2px 0 var(--papel),2px 0 0 var(--papel),-2px 0 0 var(--papel)}
 .bloco{display:inline-flex;flex-direction:column;align-items:flex-start}
 .pre{font:400 calc(var(--fs,200px)*.13)/1 Elite,monospace;letter-spacing:.3em;margin:0 0 .1em .25em;background:var(--rubro);color:#fff;padding:.28em .45em .22em .55em;position:relative;z-index:2}
 .grande{font:400 var(--fs,200px)/.9 Rozha,serif;color:var(--rubro);letter-spacing:-.01em;white-space:nowrap;
   clip-path:inset(0 100% 0 0);transition:clip-path .85s cubic-bezier(.7,0,.2,1) .05s}
 .pronto .grande{clip-path:inset(-10% -2% -10% 0)}
-/* folha de estêncil translúcida presa com fita: o nome vermelho aparece por trás, a tinta vem por cima */
-/* folha de estêncil translúcida presa com fita. Sem transform/opacity no contêiner: senão o multiply da arte fica isolado e não enxerga o nome */
-.folha-st{position:relative;width:calc(var(--ah,70svh)*.84);aspect-ratio:1}
-.folha-st::before{content:"";position:absolute;inset:0;background:var(--grao),rgba(250,248,243,.8);
-  box-shadow:0 1px 0 rgba(0,0,0,.05),0 18px 34px -14px rgba(40,30,20,.32),0 2px 6px rgba(40,30,20,.1);
-  transform:rotate(-1.6deg) translateY(14px) scale(.97);opacity:0;transition:transform .6s cubic-bezier(.16,.84,.32,1),opacity .4s}
-.pronto .folha-st::before{transform:rotate(-1.6deg);opacity:1}
-.arte{position:absolute;inset:3.2%;height:93.6%;width:93.6%;mix-blend-mode:multiply;display:block;transform:rotate(-1.6deg)}
-.fita-st{position:absolute;top:-14px;width:30%;height:30px;background:var(--grao),rgba(200,22,29,.8);box-shadow:0 1px 2px rgba(0,0,0,.15);z-index:2;opacity:0;transition:opacity .3s .35s}
-.pronto .fita-st{opacity:1}
-.fa{left:-5%;transform:rotate(-14deg)}
-.fb{right:-5%;transform:rotate(11deg)}
-video.arte,img.arte{object-fit:cover}
+/* quadro de realismo: a peça entra em macro (pele, poro, sombra) e abre até inteira */
+.quadro{position:relative;margin:0;order:1;height:calc(var(--ah,70svh)*.8);aspect-ratio:4/5;z-index:1}
+.quadro::before{content:"";position:absolute;inset:0;transform:translate(12px,12px);background:var(--rubro);z-index:-1}
+.q-janela{position:absolute;inset:0;overflow:hidden;background:var(--escuro);outline:2px solid var(--tinta)}
+.q-janela img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform,opacity;filter:grayscale(.15) contrast(1.04)}
+.q-c{position:absolute;width:22px;height:22px;border:0 solid var(--tinta);z-index:2}
+.q-c1{top:-12px;left:-12px;border-width:2px 0 0 2px}.q-c2{top:-12px;right:-12px;border-width:2px 2px 0 0}
+.q-c3{bottom:-12px;left:-12px;border-width:0 0 2px 2px}.q-c4{bottom:-12px;right:-12px;border-width:0 2px 2px 0}
+.q-zoom{position:absolute;left:12px;top:12px;display:flex;gap:8px;align-items:baseline;padding:7px 10px;background:var(--papel);color:var(--tinta);font:400 12px/1 Elite,monospace;z-index:2}
+.q-zoom b{font:400 15px/1 Elite,monospace;color:var(--rubro);min-width:3.2em}
+.q-selo{position:absolute;right:-10px;top:18px;padding:8px 12px;background:var(--rubro);color:#fff;font:400 13px/1 Elite,monospace;letter-spacing:.06em;z-index:2;
+  transform:rotate(3deg) translateX(8px);opacity:0;transition:opacity .35s var(--ease),transform .45s var(--ease)}
+.q-selo.on{opacity:1;transform:rotate(3deg)}
+.hero .quadro.ent{transform:translateY(18px) scale(.985)}
+.pronto .quadro.ent{transform:none}
 .eti{position:absolute;top:50%;margin:0;font:400 14px/1.5 Elite,monospace;transform:translateY(-50%)}
 .e1{left:var(--g)}
 .e2{right:var(--g);text-align:right}
@@ -107,17 +110,20 @@ video.arte,img.arte{object-fit:cover}
 .escuro .lead{color:var(--cinza-e)}
 .centro{display:flex;justify-content:center;margin-top:40px}
 
-.comp{position:relative;width:min(640px,100%);aspect-ratio:1;margin:0 auto;overflow:hidden;background:#fff;box-shadow:0 30px 60px -36px rgba(0,0,0,.45);
-  outline:1px solid var(--fio);user-select:none;-webkit-user-select:none;touch-action:pan-y}
-.comp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;-webkit-user-drag:none;pointer-events:none}
-.c-tinta{position:absolute;inset:0;clip-path:inset(0 0 0 var(--x));background:#f6f2ea}
-.c-tinta img{filter:invert(1);mix-blend-mode:multiply}
-.c-linha{position:absolute;top:0;bottom:0;left:var(--x);width:2px;margin-left:-1px;background:var(--rubro);pointer-events:none}
-.c-linha span{position:absolute;top:50%;left:50%;width:46px;height:46px;transform:translate(-50%,-50%);display:grid;place-items:center;background:var(--rubro);color:#fff;font:16px/1 Elite,monospace}
-.c-range{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
-.c-r{position:absolute;top:14px;font:400 13px/1 Elite,monospace;padding:7px 10px;background:var(--papel);pointer-events:none}
-.c-r1{left:14px}.c-r2{right:14px;background:var(--tinta);color:var(--papel)}
-.c-tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 22px;margin-top:26px}
+/* peça premiada em destaque no portfólio */
+.premiada{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:center;max-width:1040px;margin:0 auto clamp(48px,7vw,90px)}
+.pr-foto{position:relative;margin:0;isolation:isolate;justify-self:end;width:min(100%,440px)}
+.pr-foto img{display:block;width:100%;height:auto!important;max-height:none;aspect-ratio:4/5;object-fit:cover;outline:2px solid var(--papel)}
+.pr-foto::before{content:"";position:absolute;inset:0;transform:translate(12px,12px);background:var(--rubro);z-index:-1}
+.pr-selo{position:absolute;right:-10px;top:18px;padding:8px 12px;background:var(--rubro);color:#fff;font:400 13px/1 Elite,monospace;transform:rotate(3deg)}
+.pr-txt{max-width:440px}
+.pr-txt h3{font:400 clamp(34px,4vw,54px)/1.02 Rozha,serif;margin:10px 0 14px}
+.pr-txt p{color:var(--cinza-e);margin:0 0 24px}
+.pr-dados{list-style:none;padding:0;margin:0 0 28px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid rgba(235,230,220,.25);border-bottom:1.5px solid rgba(235,230,220,.25)}
+.pr-dados li{padding:14px 6px;text-align:center;font:400 12px/1.3 Elite,monospace;color:var(--cinza-e)}
+.pr-dados li+li{border-left:1.5px solid rgba(235,230,220,.25)}
+.pr-dados b{display:block;font:400 30px/1.1 Rozha,serif;color:var(--papel)}
+.filtros sup{font-size:.72em;margin-left:4px;color:var(--rubro);vertical-align:super}
 .c-tabs button,.filtros button{background:none;border:0;padding:8px 2px;cursor:pointer;font:400 15px/1 Elite,monospace;color:var(--cinza);position:relative;transition:color .3s var(--ease)}
 .c-tabs button::after,.filtros button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--rubro);transform:scaleX(0);transition:transform .45s var(--ease)}
 .c-tabs button.on,.filtros button.on{color:var(--tinta)}
@@ -252,6 +258,9 @@ video.arte,img.arte{object-fit:cover}
   .morada .bts{justify-content:center}
 }
 @media (max-width:640px){
+  .premiada{grid-template-columns:1fr;text-align:center;justify-items:center}.pr-foto{justify-self:center;width:min(86%,380px)}.pr-txt{margin:0 auto}
+  .quadro{height:auto;width:min(74vw,calc(var(--ah,70svh)*.64))}
+  .pre{font-size:13px}
   body{font-size:16px}
   .grade{grid-template-columns:repeat(2,1fr)}
   .trio,.cartazes{gap:8px}
@@ -275,5 +284,6 @@ video.arte,img.arte{object-fit:cover}
   .caos-img{max-width:330px}
   .c-tabs{gap:4px 16px}
 }
+@media (max-width:420px),(max-height:560px) and (orientation:landscape){.q-zoom span{display:none}.q-zoom{left:8px;top:8px}.q-selo{font-size:12px;padding:6px 9px}}
 @media (max-height:560px) and (orientation:landscape){.frase,.peca{display:none}.hero{padding-top:66px;padding-bottom:14px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.rev{opacity:1;transform:none}.grande{clip-path:none}}

@@ -13,12 +13,12 @@
 <meta property="og:url" content="https://azeugral.github.io/bruno-maximos/">
 <link rel="preload" href="assets/fonts/rozha.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/elite.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/site.css?v=14">
+<link rel="stylesheet" href="assets/css/site.css?v=21">
 </head>
 <body>
 <header class="topo" id="topo">
   <nav class="menu menu-e" aria-label="Secções">
-    <a href="#tinta">A tinta</a><a href="#portfolio">Portfólio</a><a href="#caos">Trash Polka</a>
+    <a href="#portfolio">Portfólio</a><a href="#caos">Trash Polka</a><a href="#processo">Processo</a>
   </nav>
   <a class="marca" href="#inicio" aria-label="Bruno Máximos, início"><i class="xis" aria-hidden="true"></i><span>Máximos</span><i class="xis" aria-hidden="true"></i></a>
   <nav class="menu menu-d" aria-label="Mais">
@@ -27,7 +27,7 @@
   <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
 </header>
 <div class="gaveta" id="gaveta" hidden>
-  <a href="#tinta">A tinta</a><a href="#portfolio">Portfólio</a><a href="#caos">Trash Polka</a><a href="#artista">O artista</a><a href="#estudio">Estúdio</a>
+  <a href="#portfolio">Portfólio</a><a href="#caos">Trash Polka</a><a href="#processo">Processo</a><a href="#artista">O artista</a><a href="#estudio">Estúdio</a>
   <a class="bt bt-cor" href="#marcar">Marcar sessão</a>
 </div>
 
@@ -37,12 +37,14 @@
   <p class="eti e2">Lousada<br>Porto · PT</p>
   <div class="palco" id="palco">
     <div class="nome" aria-hidden="true"><div class="bloco"><span class="pre">Bruno</span><span class="grande" id="grande">Máximos</span></div></div>
-    <div class="folha-st" id="folha">
-      <canvas class="arte" id="arteCv"></canvas>
-      <video class="arte" id="arteVid" muted playsinline loop preload="none" hidden></video>
-      <img class="arte arte-fixa" id="arteImg" src="assets/img/hero-poster.webp" alt="" hidden>
-      <i class="fita-st fa"></i><i class="fita-st fb"></i>
-    </div>
+    <figure class="quadro" id="quadro" aria-label="Peças de realismo de Bruno Máximos">
+      <div class="q-janela" id="qJanela">
+        <img src="assets/img/h/premio.webp" alt="Realismo black and grey premiado com o 1.º lugar" width="1200" height="1500" fetchpriority="high">
+      </div>
+      <i class="q-c q-c1"></i><i class="q-c q-c2"></i><i class="q-c q-c3"></i><i class="q-c q-c4"></i>
+      <figcaption class="q-zoom"><span>Ampliação</span><b id="qZoom">×1,0</b></figcaption>
+      <span class="q-selo" id="qSelo">1.º lugar</span>
+    </figure>
   </div>
   <h1 class="sr">Bruno Máximos, tatuador de realismo e Trash Polka em Lousada</h1>
   <div class="hero-base">
@@ -57,29 +59,25 @@
   <span>realismo</span><i class="xis"></i><span>preto e cinza</span><i class="xis"></i><span>trash polka</span><i class="xis"></i><span>fechamentos</span><i class="xis"></i><span>coberturas</span><i class="xis"></i>
 </div></div>
 
-<section class="sec papel tinta" id="tinta">
-  <div class="cab rev">
-    <p class="chapeu">Da pele ao papel</p>
-    <h2>Só a tinta</h2>
-    <p class="lead">Tirámos a tinta das fotografias para mostrar o desenho como ele é: preto, cinza e o que a pele deixa respirar. Arrasta para comparar.</p>
-  </div>
-  <div class="comp rev" id="comp" style="--x:50%">
-    <img class="c-foto" id="cFoto" src="assets/hero/velho-foto.webp" alt="Fotografia da tatuagem na pele" width="1024" height="1024" loading="lazy">
-    <div class="c-tinta"><img id="cTinta" src="assets/hero/velho.webp" alt="" width="1024" height="1024" loading="lazy"></div>
-    <div class="c-linha" aria-hidden="true"><span>↔</span></div>
-    <input class="c-range" id="cRange" type="range" min="0" max="100" value="50" aria-label="Comparar pele e tinta">
-    <span class="c-r c-r1">Pele</span><span class="c-r c-r2">Tinta</span>
-  </div>
-  <div class="c-tabs" id="cTabs">
-    <button class="on" data-n="velho">O riso</button><button data-n="poseidon">Poseidon</button><button data-n="lobo">O lobo</button><button data-n="olho">O tempo</button>
-  </div>
-</section>
-
 <section class="sec escuro portfolio" id="portfolio">
   <div class="cab rev">
     <p class="chapeu">Trabalhos</p>
     <h2>Portfólio</h2>
   </div>
+  <article class="premiada rev">
+    <figure class="pr-foto"><img src="assets/img/h/premio.webp" alt="Tatuagem realista premiada com o 1.º lugar em Realismo Black &amp; Grey" width="1200" height="1500" loading="lazy"><span class="pr-selo">1.º lugar</span></figure>
+    <div class="pr-txt">
+      <p class="chapeu">Peça premiada</p>
+      <h3>Realismo<br>Black&nbsp;&amp;&nbsp;Grey</h3>
+      <p>1.º lugar no Ponferrada Tattoo Show. Cada ruga, cada reflexo nos óculos e cada dente feitos só com preto, cinza e o tom da pele.</p>
+      <ul class="pr-dados">
+        <li><b>1.º</b><span>lugar em concurso</span></li>
+        <li><b id="nPecas">27</b><span>peças no portfólio</span></li>
+        <li><b>100%</b><span>preto e cinza à mão</span></li>
+      </ul>
+      <a class="bt bt-cor" href="#marcar">Quero uma peça assim</a>
+    </div>
+  </article>
   <div class="filtros" role="tablist" aria-label="Filtrar trabalhos">
     <button class="on" data-f="todos">Todos</button><button data-f="realismo">Realismo</button><button data-f="trash">Trash Polka</button><button data-f="curadas">Cicatrizadas</button><button data-f="coberturas">Coberturas</button>
   </div>
@@ -219,7 +217,6 @@
 </div>
 
 <script src="assets/js/pecas.js?v=3"></script>
-<script src="assets/js/hero.js?v=4"></script>
-<script src="assets/js/main.js?v=13"></script>
+<script src="assets/js/main.js?v=21"></script>
 </body>
 </html>

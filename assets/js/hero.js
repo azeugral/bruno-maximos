@@ -3,9 +3,11 @@
    Desenha sobre BRANCO; o canvas/vídeo entra com mix-blend-mode:multiply sobre o papel. */
 (function () {
   var PECAS = ['velho', 'poseidon', 'lobo', 'olho'];
-  var CICLO = 8.4;
+  var CICLO = 5.0;
 
   var VS = 'attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}';
+  /* mesa de estêncil: traço roxo do decalque (0-.6 s) -> tinta preta, escuros primeiro (.3-1.5 s)
+     -> fica -> a folha é arrancada num rasgo diagonal (4.3-5 s). Desenha sobre BRANCO (multiply). */
   var FS = [
     'precision highp float;varying vec2 v;',
     'uniform sampler2D T;uniform float f,sd;uniform vec2 px;',
@@ -14,29 +16,31 @@
     ' return mix(mix(h(i),h(i+vec2(1,0)),q.x),mix(h(i+vec2(0,1)),h(i+1.),q.x),q.y);}',
     'float fb(vec2 p){float s=0.,a=.5;for(int i=0;i<5;i++){s+=a*n(p);p*=2.03;a*=.5;}return s;}',
     'float tt(vec2 u){return texture2D(T,u).r;}',
+    'float ease(float x){x=clamp(x,0.,1.);return 1.-pow(1.-x,3.);}',
     'void main(){vec2 u=vec2(v.x,1.-v.y);',
     ' float t=tt(u);',
-    /* traço: borda da tinta, como o contorno que abre a sessão */
     ' float gx=tt(u+vec2(px.x,0))-tt(u-vec2(px.x,0)),gy=tt(u+vec2(0,px.y))-tt(u-vec2(0,px.y));',
-    ' float tr=smoothstep(.07,.2,length(vec2(gx,gy)))*smoothstep(.12,.3,t);',
+    ' float tr=smoothstep(.06,.18,length(vec2(gx,gy)))*smoothstep(.1,.28,t);',
     ' float ru=fb(u*5.+sd*13.);',
-    /* chegada: diagonal de cima para baixo, escuros antes dos cinzas */
-    ' float ch=clamp((u.y*.62+(1.-u.x)*.12)+(1.-t)*.3+ru*.14-.08,0.,1.);',
-    ' float linha=smoothstep(ch-.04,ch+.02,clamp((f-.25)/1.1,0.,1.)*1.1);',
-    ' float som=smoothstep(ch-.03,ch+.05,clamp((f-.9)/2.4,0.,1.)*1.12);',
-    /* rasto do whip shading na frente da sombra */
-    ' float rasto=som*(1.-smoothstep(0.,.08,clamp((f-.9)/2.4,0.,1.)*1.12-ch))*step(.5,h(floor(u*vec2(220.,90.))+sd));',
-    ' float ink=max(pow(t,1.15)*som*(1.-.25*rasto),tr*linha*.8);',
-    /* apagar: a tinta some em manchas de papel molhado */
-    ' float sai=smoothstep(.0,1.,clamp((f-7.45)/.9,0.,1.));',
-    ' ink*=1.-smoothstep(ru-.12,ru,sai*1.15);',
-    /* respingos e meio-tom do Trash Polka, sempre com a tinta */
-    ' vec2 g=u*vec2(64.);vec2 gi=floor(g);float r=h(gi+sd*7.);',
-    ' float borda=smoothstep(.02,.25,tt((gi+.5)/64.))*(1.-smoothstep(.35,.7,tt((gi+.5)/64.)));',
-    ' float gota=step(.93,r)*borda*(1.-smoothstep(.08+.2*h(gi+2.),.11+.2*h(gi+2.),length(fract(g)-.5)));',
-    ' ink=max(ink,gota*som*(1.-sai));',
-    ' vec3 c=vec3(1.)*(1.-ink*.9);',
-    ' c-= (h(u*800.+f)-.5)*.012;',
+    ' float ch=clamp(u.y*.55+(1.-u.x)*.15+ru*.2,0.,1.);',
+    /* decalque roxo */
+    ' float est=tr*smoothstep(ch-.05,ch+.01,ease(f/.6)*1.1);',
+    /* tinta: escuros chegam antes dos cinzas */
+    ' float che=clamp(ch*.7+(1.-t)*.35,0.,1.);',
+    ' float som=smoothstep(che-.06,che+.04,ease((f-.3)/1.2)*1.12);',
+    ' float ink=pow(t,1.12)*som;',
+    /* rasgo: borda serrilhada diagonal que atravessa a folha */
+    ' float k=clamp((f-4.3)/.62,0.,1.);k=k*k*(3.-2.*k);',
+    ' float d=(u.x*.62+u.y*.38)+(n(vec2(u.y*38.,sd))-.5)*.035+(fb(u*vec2(4.,16.)+sd)-.5)*.06;',
+    ' float pos=k*1.35-.12;',
+    ' float fica=smoothstep(pos-.004,pos+.004,d);',
+    ' float sombra=k>0.&&k<1.?exp(-pow((d-pos-.012)/.012,2.))*.22:0.;',
+    ' vec3 roxo=vec3(.42,.3,.66);',
+    ' vec3 c=vec3(1.);',
+    ' c*=mix(vec3(1.),roxo,est*.8*(1.-som*.85)*fica);',
+    ' c*=1.-ink*.92*fica;',
+    ' c*=1.-sombra;',
+    ' c-=(h(u*800.+f)-.5)*.012;',
     ' gl_FragColor=vec4(c,1.);}'
   ].join('\n');
 

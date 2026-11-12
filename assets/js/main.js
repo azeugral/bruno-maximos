@@ -55,7 +55,7 @@
     /* telemóvel: vídeo do mesmo shader; se o modo de poupança recusar o play, volta ao WebGL */
     cv.hidden = true; vid.hidden = false;
     vid.poster = 'assets/img/hero-poster.webp';
-    vid.src = 'assets/video/hero.mp4?v=3';
+    vid.src = 'assets/video/hero.mp4?v=4';
     vid.addEventListener('timeupdate', function () { rotulo(Math.floor(vid.currentTime / HeroTinta.ciclo) % HeroTinta.n); });
     var p = vid.play();
     if (p && p.catch) p.catch(function () { shader().catch(parado); });
@@ -65,7 +65,7 @@
 
   /* entrada */
   d.querySelectorAll('.eti,.hero-base,.pre').forEach(function (el) { el.classList.add('ent'); });
-  requestAnimationFrame(function () { setTimeout(function () { hero.classList.add('pronto'); }, 80); });
+  requestAnimationFrame(function () { setTimeout(function () { hero.classList.add('pronto'); }, 30); });
 
   /* ---------- topo e gaveta ---------- */
   var topo = d.getElementById('topo'), gav = d.getElementById('gaveta'), burger = d.getElementById('burger');

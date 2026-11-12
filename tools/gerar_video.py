@@ -1,8 +1,8 @@
-"""MP4 do hero para o telemóvel: 1080², 30 fps, 4 peças x 8,4 s, fundo branco (entra com multiply).
+"""MP4 do hero para o telemóvel: 1080², 30 fps, 4 peças x 5 s, fundo branco (entra com multiply).
 uso: python tools/gerar_video.py  (servidor local em :8941)"""
 import asyncio, subprocess, os
 from playwright.async_api import async_playwright
-W, H, FPS, TOTAL = 1080, 1080, 30, 4 * 8.4
+W, H, FPS, TOTAL = 1080, 1080, 30, 4 * 5.0
 OUT = os.path.join(os.path.dirname(__file__), '..', 'assets', 'video', 'hero.mp4')
 async def main():
     ff = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', str(FPS), '-i', '-',
@@ -12,8 +12,8 @@ async def main():
         b = await p.chromium.launch(args=['--use-gl=angle', '--ignore-gpu-blocklist'])
         pg = await b.new_page(viewport={'width': W, 'height': H + 400})
         await pg.goto(f'http://localhost:8941/?render&w={W}'); await pg.wait_for_function('window.__pronto')
-        await pg.add_style_tag(content=f'#arteCv{{position:fixed!important;left:0;top:0;width:{W}px!important;height:{H}px!important;z-index:999;mix-blend-mode:normal!important}}body,.hero{{background:#fff!important}}.topo{{display:none}}')
-        await pg.evaluate('__q(6)')
+        await pg.add_style_tag(content=f'#arteCv{{position:fixed!important;left:0;top:0;width:{W}px!important;height:{H}px!important;z-index:999;mix-blend-mode:normal!important;transform:none!important;inset:auto!important}}body,.hero{{background:#fff!important}}.folha-st{{transform:none!important;padding:0!important;background:#fff!important;box-shadow:none!important;opacity:1!important}}.folha-st::before,.fita-st{{display:none!important}}.topo{{display:none}}')
+        await pg.evaluate('__q(3)')
         await pg.screenshot(path=os.path.join(os.path.dirname(OUT), '..', 'img', 'hero-poster.png'), clip={'x': 0, 'y': 0, 'width': W, 'height': H})
         n = int(round(TOTAL * FPS))
         for i in range(n):

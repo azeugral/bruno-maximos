@@ -2,7 +2,7 @@
 
 Site de prévia (noindex) para Bruno Máximos (@brunomaximos.tattooartist), Máximo's Tattoo Shop, Lousada (Porto). PT-PT.
 
-- Hero: `assets/js/hero.js` (WebGL, estêncil vermelho → tinta → pincelada Trash Polka entre peças). Telemóvel em pé: `assets/video/hero.mp4` (`tools/gerar_video.py`).
+- Hero v2: tinta real tirada da pele (`tools/tinta.py`) forma-se sobre o nome vermelho (`assets/js/hero.js`); telemóvel usa `assets/video/hero.mp4` (`tools/gerar_video.py`, fundo branco + multiply).
 - Portfólio: `assets/js/pecas.js`. Auditoria: `tools/ver.py`.
 - Marcação → WhatsApp 351962953437 (número da loja no Google).
 

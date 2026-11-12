@@ -11,10 +11,10 @@ async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(args=['--use-gl=angle', '--enable-webgl', '--ignore-gpu-blocklist'])
         pg = await b.new_page(viewport={'width': 1440, 'height': 900})
-        await pg.goto(URL + '?render&intro'); await pg.wait_for_function('window.__pronto')
-        for t in (0.6, 1.4, 2.6, 8.0, 8.4, 8.8):
+        await pg.goto(URL + '?render&w=800'); await pg.wait_for_function('window.__pronto')
+        for t in (0.5, 1.0, 1.8, 2.6, 4.0, 7.9, 8.6, 10.5, 25.0, 33.0):
             await pg.evaluate(f'__q({t})')
-            await pg.locator('#arte').screenshot(path=f'{OUT}/hero-{t}.png')
+            await pg.locator('#arteCv').screenshot(path=f'{OUT}/hero-{t}.png')
         for w, h, nome in ((1440, 900, 'pc'), (1366, 768, 'note'), (1920, 1080, 'fhd'), (390, 844, 'cel'), (320, 640, 'cel320'), (844, 390, 'deitado'), (768, 1024, 'tablet')):
             ctx = await b.new_context(viewport={'width': w, 'height': h}, device_scale_factor=1, has_touch=w < 900, is_mobile=w < 600)
             q = await ctx.new_page(); await q.goto(URL); await q.wait_for_timeout(2500)
